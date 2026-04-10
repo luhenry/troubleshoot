@@ -11,17 +11,17 @@ concurrency:
 
 jobs:
   goreleaser:
-    runs-on: troubleshoot_release
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: azure/docker-login@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      # - uses: azure/docker-login@v2
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USER }}
+      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - uses: actions/setup-go@v6
         with:
@@ -31,9 +31,9 @@ jobs:
         uses: goreleaser/goreleaser-action@v7
         with:
           version: "v2.12.3"
-          args: release --clean --config deploy/.goreleaser.yaml
+          args: release --clean --config deploy/.goreleaser.yaml --skip=publish
         env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update new preflight version in krew-index
         if: ${{ !contains(github.ref_name, '-') }}
